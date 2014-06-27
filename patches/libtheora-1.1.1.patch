@@ -1,0 +1,163 @@
+diff -burN libtheora-1.1.1/aclocal.m4 libtheora-1.1.1-PS3/aclocal.m4
+--- libtheora-1.1.1/aclocal.m4	2009-10-01 14:04:05.000000000 -0400
++++ libtheora-1.1.1-PS3/aclocal.m4	2013-12-10 19:07:09.445405652 -0500
+@@ -10155,7 +10155,7 @@
+ dnl
+ AC_DEFUN([AM_PATH_SDL],
+ [dnl 
+-dnl Get the cflags and libraries from the sdl-config script
++dnl Get the cflags and libraries from the sdl2-config script
+ dnl
+ AC_ARG_WITH(sdl-prefix,[  --with-sdl-prefix=PFX   Prefix where SDL is installed (optional)],
+             sdl_prefix="$withval", sdl_prefix="")
+@@ -10167,19 +10167,19 @@
+   if test x$sdl_exec_prefix != x ; then
+      sdl_args="$sdl_args --exec-prefix=$sdl_exec_prefix"
+      if test x${SDL_CONFIG+set} != xset ; then
+-        SDL_CONFIG=$sdl_exec_prefix/bin/sdl-config
++        SDL_CONFIG=$sdl_exec_prefix/bin/sdl2-config
+      fi
+   fi
+   if test x$sdl_prefix != x ; then
+      sdl_args="$sdl_args --prefix=$sdl_prefix"
+      if test x${SDL_CONFIG+set} != xset ; then
+-        SDL_CONFIG=$sdl_prefix/bin/sdl-config
++        SDL_CONFIG=$sdl_prefix/bin/sdl2-config
+      fi
+   fi
+ 
+   AC_REQUIRE([AC_CANONICAL_TARGET])
+   PATH="$prefix/bin:$prefix/usr/bin:$PATH"
+-  AC_PATH_PROG(SDL_CONFIG, sdl-config, no, [$PATH])
++  AC_PATH_PROG(SDL_CONFIG, sdl2-config, no, [$PATH])
+   min_sdl_version=ifelse([$1], ,0.11.0,$1)
+   AC_MSG_CHECKING(for SDL - version >= $min_sdl_version)
+   no_sdl=""
+@@ -10204,7 +10204,7 @@
+       LIBS="$LIBS $SDL_LIBS"
+ dnl
+ dnl Now check if the installed SDL is sufficiently new. (Also sanity
+-dnl checks the results of sdl-config to some extent
++dnl checks the results of sdl2-config to some extent
+ dnl
+       rm -f conf.sdltest
+       AC_TRY_RUN([
+@@ -10254,11 +10254,11 @@
+     }
+   else
+     {
+-      printf("\n*** 'sdl-config --version' returned %d.%d.%d, but the minimum version\n", $sdl_major_version, $sdl_minor_version, $sdl_micro_version);
+-      printf("*** of SDL required is %d.%d.%d. If sdl-config is correct, then it is\n", major, minor, micro);
++      printf("\n*** 'sdl2-config --version' returned %d.%d.%d, but the minimum version\n", $sdl_major_version, $sdl_minor_version, $sdl_micro_version);
++      printf("*** of SDL required is %d.%d.%d. If sdl2-config is correct, then it is\n", major, minor, micro);
+       printf("*** best to upgrade to the required version.\n");
+-      printf("*** If sdl-config was wrong, set the environment variable SDL_CONFIG\n");
+-      printf("*** to point to the correct copy of sdl-config, and remove the file\n");
++      printf("*** If sdl2-config was wrong, set the environment variable SDL_CONFIG\n");
++      printf("*** to point to the correct copy of sdl2-config, and remove the file\n");
+       printf("*** config.cache before re-running configure\n");
+       return 1;
+     }
+@@ -10276,10 +10276,10 @@
+   else
+      AC_MSG_RESULT(no)
+      if test "$SDL_CONFIG" = "no" ; then
+-       echo "*** The sdl-config script installed by SDL could not be found"
++       echo "*** The sdl2-config script installed by SDL could not be found"
+        echo "*** If SDL was installed in PREFIX, make sure PREFIX/bin is in"
+        echo "*** your path, or set the SDL_CONFIG environment variable to the"
+-       echo "*** full path to sdl-config."
++       echo "*** full path to sdl2-config."
+      else
+        if test -f conf.sdltest ; then
+         :
+@@ -10309,7 +10309,7 @@
+         [ echo "*** The test program failed to compile or link. See the file config.log for the"
+           echo "*** exact error that occured. This usually means SDL was incorrectly installed"
+           echo "*** or that you have moved SDL since it was installed. In the latter case, you"
+-          echo "*** may want to edit the sdl-config script: $SDL_CONFIG" ])
++          echo "*** may want to edit the sdl2-config script: $SDL_CONFIG" ])
+           CFLAGS="$ac_save_CFLAGS"
+           CXXFLAGS="$ac_save_CXXFLAGS"
+           LIBS="$ac_save_LIBS"
+diff -burN libtheora-1.1.1/configure libtheora-1.1.1-PS3/configure
+--- libtheora-1.1.1/configure	2009-10-01 14:04:08.000000000 -0400
++++ libtheora-1.1.1-PS3/configure	2013-12-10 19:07:22.606241135 -0500
+@@ -13020,20 +13020,20 @@
+   if test x$sdl_exec_prefix != x ; then
+      sdl_args="$sdl_args --exec-prefix=$sdl_exec_prefix"
+      if test x${SDL_CONFIG+set} != xset ; then
+-        SDL_CONFIG=$sdl_exec_prefix/bin/sdl-config
++        SDL_CONFIG=$sdl_exec_prefix/bin/sdl2-config
+      fi
+   fi
+   if test x$sdl_prefix != x ; then
+      sdl_args="$sdl_args --prefix=$sdl_prefix"
+      if test x${SDL_CONFIG+set} != xset ; then
+-        SDL_CONFIG=$sdl_prefix/bin/sdl-config
++        SDL_CONFIG=$sdl_prefix/bin/sdl2-config
+      fi
+   fi
+ 
+ 
+   PATH="$prefix/bin:$prefix/usr/bin:$PATH"
+-  # Extract the first word of "sdl-config", so it can be a program name with args.
+-set dummy sdl-config; ac_word=$2
++  # Extract the first word of "sdl2-config", so it can be a program name with args.
++set dummy sdl2-config; ac_word=$2
+ { $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+ $as_echo_n "checking for $ac_word... " >&6; }
+ if test "${ac_cv_path_SDL_CONFIG+set}" = set; then
+@@ -13153,11 +13153,11 @@
+     }
+   else
+     {
+-      printf("\n*** 'sdl-config --version' returned %d.%d.%d, but the minimum version\n", $sdl_major_version, $sdl_minor_version, $sdl_micro_version);
+-      printf("*** of SDL required is %d.%d.%d. If sdl-config is correct, then it is\n", major, minor, micro);
++      printf("\n*** 'sdl2-config --version' returned %d.%d.%d, but the minimum version\n", $sdl_major_version, $sdl_minor_version, $sdl_micro_version);
++      printf("*** of SDL required is %d.%d.%d. If sdl2-config is correct, then it is\n", major, minor, micro);
+       printf("*** best to upgrade to the required version.\n");
+-      printf("*** If sdl-config was wrong, set the environment variable SDL_CONFIG\n");
+-      printf("*** to point to the correct copy of sdl-config, and remove the file\n");
++      printf("*** If sdl2-config was wrong, set the environment variable SDL_CONFIG\n");
++      printf("*** to point to the correct copy of sdl2-config, and remove the file\n");
+       printf("*** config.cache before re-running configure\n");
+       return 1;
+     }
+@@ -13217,10 +13217,10 @@
+      { $as_echo "$as_me:$LINENO: result: no" >&5
+ $as_echo "no" >&6; }
+      if test "$SDL_CONFIG" = "no" ; then
+-       echo "*** The sdl-config script installed by SDL could not be found"
++       echo "*** The sdl2-config script installed by SDL could not be found"
+        echo "*** If SDL was installed in PREFIX, make sure PREFIX/bin is in"
+        echo "*** your path, or set the SDL_CONFIG environment variable to the"
+-       echo "*** full path to sdl-config."
++       echo "*** full path to sdl2-config."
+      else
+        if test -f conf.sdltest ; then
+         :
+@@ -13289,7 +13289,7 @@
+ 	 echo "*** The test program failed to compile or link. See the file config.log for the"
+           echo "*** exact error that occured. This usually means SDL was incorrectly installed"
+           echo "*** or that you have moved SDL since it was installed. In the latter case, you"
+-          echo "*** may want to edit the sdl-config script: $SDL_CONFIG"
++          echo "*** may want to edit the sdl2-config script: $SDL_CONFIG"
+ fi
+ 
+ rm -rf conftest.dSYM
+diff -burN libtheora-1.1.1/SConstruct libtheora-1.1.1-PS3/SConstruct
+--- libtheora-1.1.1/SConstruct	2009-08-05 21:13:12.000000000 -0400
++++ libtheora-1.1.1-PS3/SConstruct	2013-12-10 19:07:54.833838357 -0500
+@@ -59,9 +59,9 @@
+   return ret
+      
+ def CheckSDL(context):
+-  name = "sdl-config"
++  name = "sdl2-config"
+   context.Message( 'Checking for %s... ' % name )
+-  ret = SCons.Util.WhereIs('sdl-config')
++  ret = SCons.Util.WhereIs('sdl2-config')
+   context.Result( ret ) 
+   return ret
+ 

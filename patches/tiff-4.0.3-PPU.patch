@@ -1,0 +1,32 @@
+diff -burN tiff-4.0.3/config/config.sub tiff-4.0.3-PS3/config/config.sub
+--- tiff-4.0.3/config/config.sub	2008-05-09 12:15:42.000000000 -0400
++++ tiff-4.0.3-PS3/config/config.sub	2013-12-03 02:16:44.866950602 -0500
+@@ -897,6 +897,8 @@
+ 		;;
+ 	ppc64)	basic_machine=powerpc64-unknown
+ 		;;
++	ppu)	basic_machine=powerpc64-unknown
++		;;
+ 	ppc64-*) basic_machine=powerpc64-`echo $basic_machine | sed 's/^[^-]*-//'`
+ 		;;
+ 	ppc64le | powerpc64little | ppc64-le | powerpc64-little)
+diff -burN tiff-4.0.3/libtiff/tiffiop.h tiff-4.0.3-PS3/libtiff/tiffiop.h
+--- tiff-4.0.3/libtiff/tiffiop.h	2012-06-06 09:35:23.000000000 -0400
++++ tiff-4.0.3-PS3/libtiff/tiffiop.h	2013-12-03 02:48:07.010863023 -0500
+@@ -67,9 +67,13 @@
+ 
+ #define    streq(a,b)      (strcmp(a,b) == 0)
+ 
+-#ifndef TRUE
+-#define	TRUE	1
+-#define	FALSE	0
++#ifndef HAVE_BOOLEAN
++# ifndef TRUE
++#  define TRUE    1
++#  define FALSE   0               /* values of boolean */
++# endif
++typedef unsigned char boolean;
++# define HAVE_BOOLEAN
+ #endif
+ 
+ typedef struct client_info {

@@ -1,0 +1,381 @@
+diff -burN libmikmod-3.3.6/config.h.in libmikmod-3.3.6-PS3/config.h.in
+--- libmikmod-3.3.6/config.h.in	2014-03-20 16:20:15.000000000 -0400
++++ libmikmod-3.3.6-PS3/config.h.in	2014-06-24 15:19:48.286397833 -0400
+@@ -80,6 +80,9 @@
+ /* Define if the Linux Ultra driver is compiled */
+ #undef DRV_ULTRA
+ 
++/* Define if the PSL1GHT driver is compiled */
++#undef DRV_PSL1GHT
++
+ /* Define if you want a .wav file writer driver */
+ #undef DRV_WAV
+ 
+diff -burN libmikmod-3.3.6/configure libmikmod-3.3.6-PS3/configure
+--- libmikmod-3.3.6/configure	2014-03-20 16:20:14.000000000 -0400
++++ libmikmod-3.3.6-PS3/configure	2014-06-24 15:40:47.632442595 -0400
+@@ -3042,13 +3042,14 @@
+ libmikmod_driver_ds=yes
+ libmikmod_driver_xaudio2=no
+ libmikmod_driver_ultra=no
++libmikmod_driver_psl1ght=yes
+ libmikmod_driver_os2=yes
+ libmikmod_driver_dart=yes
+ libmikmod_driver_aiff=yes
+ libmikmod_driver_wav=yes
+ libmikmod_driver_raw=yes
+ libmikmod_driver_stdout=yes
+-libmikmod_driver_pipe=yes
++libmikmod_driver_pipe=no
+ 
+ libmikmod_dynload=yes
+ libmikmod_dynload_underscores=no
+@@ -12380,6 +12381,11 @@
+ 	MAKEINFO="$MAKEINFO --no-split"
+ fi
+ 
++uname() {
++	if test x"$host_vendor" = x"ps3"; then echo "PSL1GHT"; else command uname "$@"; fi
++}
++
++
+ # =============================================================
+ # Check for typedefs, structures, and compiler characteristics.
+ # =============================================================
+@@ -15472,6 +15478,9 @@
+ 			fi
+ 		fi
+ 	;;
++	PSL1GHT)
++		libmikmod_driver_psl1ght=yes
++	;;
+ esac
+ 
+ if test $libmikmod_driver_af = yes
+@@ -15786,6 +15795,12 @@
+ 	fi
+ fi
+ 
++if test $libmikmod_driver_psl1ght = yes
++	then
++		libmikmod_driverlist="psl1ght $libmikmod_driverlist"
++		$as_echo "#define DRV_PSL1GHT 1" >>confdefs.h
++fi
++
+ if test $libmikmod_debug = yes
+ then
+ 
+diff -burN libmikmod-3.3.6/configure.ac libmikmod-3.3.6-PS3/configure.ac
+--- libmikmod-3.3.6/configure.ac	2014-03-11 06:56:10.000000000 -0400
++++ libmikmod-3.3.6-PS3/configure.ac	2014-06-24 15:27:45.151414783 -0400
+@@ -78,13 +78,14 @@
+ libmikmod_driver_ds=yes
+ libmikmod_driver_xaudio2=no
+ libmikmod_driver_ultra=no
++libmikmod_driver_psl1ght=no
+ libmikmod_driver_os2=yes
+ libmikmod_driver_dart=yes
+ libmikmod_driver_aiff=yes
+ libmikmod_driver_wav=yes
+ libmikmod_driver_raw=yes
+ libmikmod_driver_stdout=yes
+-libmikmod_driver_pipe=yes
++libmikmod_driver_pipe=no
+ 
+ libmikmod_dynload=yes
+ libmikmod_dynload_underscores=no
+@@ -374,6 +375,10 @@
+ 	MAKEINFO="$MAKEINFO --no-split"
+ fi
+ 
++uname() {
++	if test x"$host_vender" = x"ps3"; then echo "PSL1GHT"; else command uname "$@"; fi
++}
++
+ # =============================================================
+ # Check for typedefs, structures, and compiler characteristics.
+ # =============================================================
+@@ -803,6 +808,10 @@
+ 			fi
+ 		fi
+ 	;;
++	psl1ght*|PSL1GHT*)
++			libmikmod_driver_psl1ght=yes
++	;;
++
+ esac
+ 
+ if test $libmikmod_driver_af = yes
+@@ -1007,6 +1016,12 @@
+ 	fi
+ fi
+ 
++if test $libmikmod_driver_psl1ght = yes
++then
++	libmikmod_driverlist="psl1ght $libmikmod_driverlist"
++	AC_DEFINE([DRV_PSL1GHT], 1, [Define if the Linux PSL1GHT driver is compiled])
++fi
++
+ if test $libmikmod_debug = yes
+ then
+ 	AC_DEFINE([MIKMOD_DEBUG], 1, [Define if you want a debug version of the library])
+diff -burN libmikmod-3.3.6/drivers/drv_psl1ght.c libmikmod-3.3.6-PS3/drivers/drv_psl1ght.c
+--- libmikmod-3.3.6/drivers/drv_psl1ght.c	1969-12-31 19:00:00.000000000 -0500
++++ libmikmod-3.3.6-PS3/drivers/drv_psl1ght.c	2014-06-24 15:18:59.841396111 -0400
+@@ -0,0 +1,155 @@
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include "mikmod_internals.h"
++
++#ifdef DRV_PSL1GHT
++
++#include <audio/audio.h>
++
++static bool audInited = false, audPortOpened = false;
++static u32 portNum, audio_block_index;
++static audioPortConfig config;
++static s16 tmpbuf[2*AUDIO_BLOCK_SAMPLES];
++
++static BOOL PSL1GHT_IsThere(void)
++{
++	return 1;
++}
++
++static BOOL PSL1GHT_Init(void)
++{
++	audioPortParam params;
++	int ret;
++
++	ret=audioInit();
++	if (ret) {
++		_mm_errno = MMERR_OPENING_AUDIO;
++		return 1;
++	}
++	audInited = true;
++
++	params.numChannels = AUDIO_PORT_2CH;
++	params.numBlocks = AUDIO_BLOCK_16;
++	params.attrib = 0;
++	params.level = 1.0f;
++
++	ret=audioPortOpen(&params, &portNum);
++	if (ret) {
++		_mm_errno = MMERR_OPENING_AUDIO;
++		return 1;
++	}
++	audPortOpened = true;
++
++	ret=audioGetPortConfig(portNum, &config);
++	if (ret) {
++		_mm_errno = MMERR_OPENING_AUDIO;
++		return 1;
++	}
++
++	md_mixfreq = 48000;
++	md_mode |= (DMODE_STEREO | DMODE_16BITS);
++
++	audio_block_index = 1;
++
++	return VC_Init();
++}
++
++static void PSL1GHT_Exit(void)
++{
++	VC_Exit();
++
++	if (audPortOpened) {
++		audioPortClose(portNum);
++		audPortOpened = false;
++	}
++	if (audInited) {
++		audioQuit();
++		audInited = false;
++	}
++}
++
++static BOOL PSL1GHT_PlayStart(void)
++{
++	int ret;
++
++	ret=audioPortStart(portNum);
++	if (ret)
++		return 1;
++
++	return VC_PlayStart();
++}
++
++static void PSL1GHT_PlayStop(void)
++{
++	int ret;
++
++	VC_PlayStop();
++
++	ret=audioPortStop(portNum);
++	if (ret)
++		return;
++}
++
++static void PSL1GHT_Update(void)
++{
++	float *bufStart = (float*)(u64)config.audioDataStart;
++	u64 current_block = *(u64*)(u64)config.readIndex;
++
++	while (current_block != audio_block_index) {
++
++		float *buf = bufStart + 2 * AUDIO_BLOCK_SAMPLES * audio_block_index;
++
++		VC_WriteBytes((SBYTE *)tmpbuf, sizeof(tmpbuf));
++
++		int i;
++		for ( i=0; i < 2 * AUDIO_BLOCK_SAMPLES; i++ ) {
++			buf[i] = ((float)tmpbuf[i]) * 3.05185094759972e-05f;
++		}
++
++		audio_block_index = (audio_block_index + 1) % AUDIO_BLOCK_16;
++
++	}
++}
++
++MIKMODAPI MDRIVER drv_psl1ght = {
++	NULL,
++	"PSL1GHT Audio",
++	"PSL1GHT audio driver v1.0",
++	0, 255,
++	"psl1ght",
++
++	NULL,
++	PSL1GHT_IsThere,
++	VC_SampleLoad,
++	VC_SampleUnload,
++	VC_SampleSpace,
++	VC_SampleLength,
++	PSL1GHT_Init,
++	PSL1GHT_Exit,
++	NULL,
++	VC_SetNumVoices,
++	PSL1GHT_PlayStart,
++	PSL1GHT_PlayStop,
++	PSL1GHT_Update,
++	NULL,
++	VC_VoiceSetVolume,
++	VC_VoiceGetVolume,
++	VC_VoiceSetFrequency,
++	VC_VoiceGetFrequency,
++	VC_VoiceSetPanning,
++	VC_VoiceGetPanning,
++	VC_VoicePlay,
++	VC_VoiceStop,
++	VC_VoiceStopped,
++	VC_VoiceGetPosition,
++	VC_VoiceRealVolume
++};
++
++#else
++
++MISSING(drv_psl1ght);
++
++#endif
++
+diff -burN libmikmod-3.3.6/drivers/Makefile.am libmikmod-3.3.6-PS3/drivers/Makefile.am
+--- libmikmod-3.3.6/drivers/Makefile.am	2014-02-14 10:50:00.000000000 -0500
++++ libmikmod-3.3.6-PS3/drivers/Makefile.am	2014-06-24 15:28:13.662415796 -0400
+@@ -17,6 +17,7 @@
+              drv_oss.c    \
+              drv_osx.c    \
+              drv_pipe.c   \
++             drv_psl1ght.c \
+              drv_pulseaudio.c \
+              drv_raw.c    \
+              drv_sam9407.c\
+diff -burN libmikmod-3.3.6/drivers/Makefile.in libmikmod-3.3.6-PS3/drivers/Makefile.in
+--- libmikmod-3.3.6/drivers/Makefile.in	2014-03-20 16:20:16.000000000 -0400
++++ libmikmod-3.3.6-PS3/drivers/Makefile.in	2014-06-24 15:28:42.319416815 -0400
+@@ -229,6 +229,7 @@
+              drv_oss.c    \
+              drv_osx.c    \
+              drv_pipe.c   \
++             drv_psl1ght.c \
+              drv_pulseaudio.c \
+              drv_raw.c    \
+              drv_sam9407.c\
+diff -burN libmikmod-3.3.6/include/mikmod.h.in libmikmod-3.3.6-PS3/include/mikmod.h.in
+--- libmikmod-3.3.6/include/mikmod.h.in	2014-02-14 10:50:00.000000000 -0500
++++ libmikmod-3.3.6-PS3/include/mikmod.h.in	2014-06-24 15:30:08.711419885 -0400
+@@ -108,7 +108,7 @@
+ 
+ @DOES_NOT_HAVE_SIGNED@
+ 
+-#if defined (_LP64) || defined(__arch64__) || defined(__alpha) || defined(__x86_64) || defined(__powerpc64__)
++#if defined (_LP64) || defined(__arch64__) || defined(__alpha) || defined(__x86_64) || defined(__powerpc64__) || defined(__LP64__)
+ /* 64 bit architectures */
+ 
+ typedef signed char     SBYTE;  /* 1 byte, signed */
+@@ -790,6 +790,8 @@
+ MIKMODAPI extern struct MDRIVER drv_mac;    /* Macintosh Sound Manager driver */
+ MIKMODAPI extern struct MDRIVER drv_osx;    /* MacOS X CoreAudio Driver */
+ 
++MIKMODAPI extern struct MDRIVER drv_psl1ght; /* PSL1GHT driver */
++
+ MIKMODAPI extern struct MDRIVER drv_dc;     /* Dreamcast driver */
+ 
+ MIKMODAPI extern struct MDRIVER drv_gp32;   /* GP32 Sound driver */
+diff -burN libmikmod-3.3.6/Makefile.in libmikmod-3.3.6-PS3/Makefile.in
+--- libmikmod-3.3.6/Makefile.in	2014-03-20 16:20:17.000000000 -0400
++++ libmikmod-3.3.6-PS3/Makefile.in	2014-06-24 15:34:00.215428114 -0400
+@@ -117,7 +117,7 @@
+ 	drivers/drv_mac.lo drivers/drv_nas.lo drivers/drv_nos.lo \
+ 	drivers/drv_openal.lo drivers/drv_os2.lo drivers/drv_oss.lo \
+ 	drivers/drv_osx.lo drivers/drv_pulseaudio.lo \
+-	drivers/drv_pipe.lo drivers/drv_raw.lo drivers/drv_sam9407.lo \
++	drivers/drv_pipe.lo drivers/drv_psl1ght.lo drivers/drv_raw.lo drivers/drv_sam9407.lo \
+ 	drivers/drv_sb.lo drivers/drv_sdl.lo drivers/drv_sgi.lo \
+ 	drivers/drv_stdout.lo drivers/drv_sun.lo drivers/drv_ultra.lo \
+ 	drivers/drv_wav.lo drivers/drv_win.lo drivers/drv_wss.lo \
+@@ -394,6 +394,7 @@
+ 		drivers/drv_osx.c \
+ 		drivers/drv_pulseaudio.c \
+ 		drivers/drv_pipe.c \
++		drivers/drv_psl1ght.c \
+ 		drivers/drv_raw.c \
+ 		drivers/drv_sam9407.c \
+ 		drivers/drv_sb.c \
+@@ -591,6 +592,8 @@
+ 	drivers/$(DEPDIR)/$(am__dirstamp)
+ drivers/drv_pipe.lo: drivers/$(am__dirstamp) \
+ 	drivers/$(DEPDIR)/$(am__dirstamp)
++drivers/drv_psl1ght.lo: drivers/$(am__dirstamp) \
++	drivers/$(DEPDIR)/$(am__dirstamp)
+ drivers/drv_raw.lo: drivers/$(am__dirstamp) \
+ 	drivers/$(DEPDIR)/$(am__dirstamp)
+ drivers/drv_sam9407.lo: drivers/$(am__dirstamp) \
+@@ -784,6 +787,7 @@
+ 	-rm -f drivers/drv_osx.lo
+ 	-rm -f drivers/drv_pipe.$(OBJEXT)
+ 	-rm -f drivers/drv_pipe.lo
++	-rm -f drivers/drv_psl1ght.$(OBJEXT)
+ 	-rm -f drivers/drv_pulseaudio.$(OBJEXT)
+ 	-rm -f drivers/drv_pulseaudio.lo
+ 	-rm -f drivers/drv_raw.$(OBJEXT)
+@@ -909,6 +913,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_oss.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_osx.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_pipe.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_psl1ght.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_pulseaudio.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_raw.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@drivers/$(DEPDIR)/drv_sam9407.Plo@am__quote@
+diff -burN libmikmod-3.3.6/playercode/mdreg.c libmikmod-3.3.6-PS3/playercode/mdreg.c
+--- libmikmod-3.3.6/playercode/mdreg.c	2014-02-14 10:50:00.000000000 -0500
++++ libmikmod-3.3.6-PS3/playercode/mdreg.c	2014-06-24 15:34:56.303430107 -0400
+@@ -98,6 +98,9 @@
+ #ifdef DRV_MAC
+ 	_mm_registerdriver(&drv_mac);
+ #endif
++#ifdef DRV_PSL1GHT
++	_mm_registerdriver(&drv_psl1ght);
++#endif
+ #ifdef DRV_OSX
+ 	_mm_registerdriver(&drv_osx);
+ #endif
