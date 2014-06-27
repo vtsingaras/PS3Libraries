@@ -3,8 +3,7 @@ PS3Libraries
 
 An updated version of the PS3Libraries with a few additions.  
 
-INCLUDED PACKAGES
------------------
+**Included Packages**
 ```
   cairo-1.12.16  
   faad2-2.7  
