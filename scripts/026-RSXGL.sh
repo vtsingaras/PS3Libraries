@@ -27,7 +27,7 @@ NOCONFIGURE=1 ./autogen.sh >& ./autogen_${RSXGL}.log  || \
 cd build-ppu
 
 ## Configure the build.
-../configure
+../configure --prefix="${PS3DEV}/portlibs"
 
 ## Compile and install.
 ${MAKE:-make} && ${MAKE:-make} install
