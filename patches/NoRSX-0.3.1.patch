@@ -1,3 +1,15 @@
+diff -burN NoRSX-0.3.1/Makefile NoRSX-0.3.1-PS3/Makefile
+--- NoRSX-0.3.1/Makefile	2013-07-09 12:15:21.000000000 -0400
++++ NoRSX-0.3.1-PS3/Makefile	2014-07-04 12:09:55.369505341 -0400
+@@ -5,7 +5,7 @@
+ #---------------------------------------------------------------------------------
+ all:
+ 	@$(MAKE) -C libNoRSX --no-print-directory
+-##	@$(MAKE) -C NoRSX_Example pkg --no-print-directory
++	@$(MAKE) -C NoRSX_Example pkg --no-print-directory
+ 
+ clean:
+ 	@$(MAKE) -C libNoRSX clean --no-print-directory
 diff -burN NoRSX-0.3.1/NoRSX_Example/Makefile NoRSX-0.3.1-PS3/NoRSX_Example/Makefile
 --- NoRSX-0.3.1/NoRSX_Example/Makefile	2013-07-09 12:15:21.000000000 -0400
 +++ NoRSX-0.3.1-PS3/NoRSX_Example/Makefile	2014-07-04 12:02:30.033489512 -0400
