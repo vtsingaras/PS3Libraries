@@ -32,4 +32,4 @@ mkdir build-ppu && cd build-ppu
 	--with-zlib-prefix="${PS3DEV}/portlibs/ppu"
 
 ## Compile and install.
-# ${MAKE:-make} -j4 && ${MAKE:-make} install
+${MAKE:-make} -j4 && ${MAKE:-make} install
