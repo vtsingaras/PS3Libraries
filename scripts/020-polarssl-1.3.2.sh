@@ -48,15 +48,15 @@ echo "Building polarssl for ${PLATFORM} ${SDKVERSION} ${ARCH}"
 
 echo "Please stand by..."
 
-export CC=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-gcc
-export LD=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-ld
-export CPP=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-cpp
-export CXX=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-g++
-export AR=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-ar
-export AS=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-as
-export NM=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-nm
-export CXXCPP=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-cpp
-export RANLIB=${PSL1GHT}/ppu/bin/powerpc64-ps3-elf-ranlib
+export CC=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-gcc
+export LD=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ld
+export CPP=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-cpp
+export CXX=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-g++
+export AR=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ar
+export AS=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-as
+export NM=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-nm
+export CXXCPP=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-cpp
+export RANLIB=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ranlib
 export LDFLAGS=" -L${PSL1GHT}/ppu/lib -L${PS3DEV}/portlibs/ppu/lib -lrt -llv2 -lnet"
 export SYS_LDFLAGS=" -lnet -lsysmodule"
 export CFLAGS=" -I${PSL1GHT}/ppu/include -I${PS3DEV}/portlibs/ppu/include -mcpu=cell"

@@ -44,12 +44,13 @@ mkdir build-ppu && cd build-ppu
   RANLIB="${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ranlib" \
   CFLAGS="-O2 -Wall" \
   CXXFLAGS="-I${PSL1GHT}/ppu/include -I${PS3DEV}/portlibs/ppu/include" \
-  CPPFLAGS="-I${PSL1GHT}/ppu/include -I${PS3DEV}/portlibs/ppu/include" \
+  CPPFLAGS="-I${PSL1GHT}/ppu/include -I${PS3DEV}/portlibs/ppu/include -I${PSL1GHT}/ppu/include/net" \
   LDFLAGS="-L${PSL1GHT}/ppu/lib -L${PS3DEV}/portlibs/ppu/lib" \
-  LIBS="-lrt -llv2 -lnet -lsysutil -lsysmodule -lm" \
+  LIBS="-lnet -lsysutil -lsysmodule -lm" \
   PKG_CONFIG_LIBDIR="${PS3DEV}/portlibs/ppu/lib/pkgconfig" \
+  PKG_CONFIG_PATH="${PS3DEV}/portlibs/ppu/lib/pkgconfig" \
   ../configure --prefix="${PS3DEV}/portlibs/ppu" --host="powerpc64-ps3-elf" \
-  --without-ssl --with-polarssl="${PS3DEV}/portlibs/ppu" \
+  --without-ssl --with-polarssl="${PS3DEV}/portlibs/ppu/include/polarssl" \
   --includedir="${PS3DEV}/portlibs/ppu/include" --libdir="${PS3DEV}/portlibs/ppu/lib" \
   --with-ca-bundle="${CA_CERT}"
 
