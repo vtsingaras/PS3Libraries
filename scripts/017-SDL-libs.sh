@@ -3,7 +3,8 @@
 
 SDL_LIBS="SDL-libs"
 
-## Download the source code from our repository
+## Remove the old directory if it exists  and download the source code from our repository
+rm -rf ${SDL_LIBS}
 git clone https://github.com/Spork-Schivago/${SDL_LIBS}
 
 ## Create the build directory.
