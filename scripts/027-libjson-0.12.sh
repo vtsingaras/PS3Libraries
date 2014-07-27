@@ -1,12 +1,12 @@
 #!/bin/sh -e
 # libjson-c.sh by Mohammad Haseeb (mmhaqs@gmail.com)
-JSONC=json-c-0.11
+JSONC=json-c-0.12
 
 ## Download the source code.
 wget --no-check-certificate https://s3.amazonaws.com/json-c_releases/releases/${JSONC}.tar.gz;
 
 ## Unpack the source code.
-rm -Rf ${JSONC} && mkdir ${JSONC} && tar -zxvf ${JSONC}.tar.gz && cd ${JSONC}
+rm -Rf ${JSONC} && tar -zxvf ${JSONC}.tar.gz && cd ${JSONC}
 
 ## Patch the source if a patch exists.
 if [ -f ../../patches/${JSONC}.patch ]; then
