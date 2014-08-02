@@ -1,0 +1,20 @@
+diff -burN curl-7.37.0/src/tool_dirhie.c curl-7.37.0-PS3/src/tool_dirhie.c
+--- curl-7.37.0/src/tool_dirhie.c	2014-04-25 08:01:03.000000000 -0400
++++ curl-7.37.0-PS3/src/tool_dirhie.c	2014-06-24 01:24:10.448615768 -0400
+@@ -99,6 +99,7 @@
+   char *dirbuildup;
+   CURLcode result = CURLE_OK;
+   size_t outlen;
++	struct stat st;
+ 
+   outlen = strlen(outfile);
+   outdup = strdup(outfile);
+@@ -128,7 +129,7 @@
+         else
+           snprintf(dirbuildup, outlen, "%s%s", DIR_CHAR, tempdir);
+       }
+-      if(access(dirbuildup, F_OK) == -1) {
++      if(stat(dirbuildup, &st) == -1) {
+         if(-1 == mkdir(dirbuildup,(mode_t)0000750)) {
+           show_dir_errno(errors, dirbuildup);
+           result = CURLE_WRITE_ERROR;
