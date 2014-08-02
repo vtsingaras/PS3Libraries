@@ -17,7 +17,7 @@ fi
 
 ## Run Autogen
 echo -ne "Running autogen on ${RSXGL}, please wait : "
-NOCONFIGURE=1 ./autogen.sh >& ./autogen_${RSXGL}.log  || \
+NOCONFIGURE=1 ./autogen.sh >./autogen_${RSXGL}.log 2>&1  || \
 	(echo "Error!" && \
 	(tail ./autogen_${RSXGL}.log || true) && \
 	echo -ne "\n\nSee autogen_${RSXGL}.log for details.\n" && \
