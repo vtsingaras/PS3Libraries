@@ -4,7 +4,7 @@ RSXGL=RSXGL
 
 ## Remove the directory and download the source code.
 rm -rf ${RSXGL}
-git clone https://github.com/gzorin/${RSXGL}
+git clone https://github.com/Spork-Schivago/${RSXGL}
 
 ## Change to the source code.
 cd ${RSXGL} && mkdir build-ppu
