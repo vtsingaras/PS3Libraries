@@ -5,14 +5,10 @@ An updated version of the PS3Libraries with a few additions.
 
 **Included Packages**
 ```
-  cairo-1.12.16  
   faad2-2.7  
   flac-1.3.0  
   freetype-2.5.0.1  
-  jpeg-v9  
-  libcurl-7.33.0  
-  libintl-lite-0.5  
-  libjson-0.11  
+  jpeg-v9     
   libmad-0.15.1b  
   libmikmod-3.3.3  
   libogg-1.3.1  
@@ -31,4 +27,12 @@ An updated version of the PS3Libraries with a few additions.
   Wargio's NoRSX-0.3.1  
   webp-0.3.1  
   zlib-1.2.8  
+```
+**Borked Packages**
+```
+  libcurl
+  libintl-lite
+  RSXGL
+  libjson
+  cairo
 ```
