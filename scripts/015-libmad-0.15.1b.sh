@@ -5,7 +5,7 @@ LIBMAD_VERSION="0.15.1b"
 LIBMAD="libmad-${LIBMAD_VERSION}"
 
 ## Download the source code.
-wget --continue http://downloads.sourceforge.net/project/mad/libmad/${LIBMAD_VERSION}/${LIBMAD}.tar.gz;
+wget --continue --max-redirect=999 https://kumisystems.dl.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz;
 
 ## Unpack the source code.
 rm -Rf ${LIBMAD} && tar -zxvf ${LIBMAD}.tar.gz && cd ${LIBMAD}

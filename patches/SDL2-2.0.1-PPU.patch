@@ -3066,7 +3066,7 @@ diff -burN SDL2-2.0.1/src/video/psl1ght/SDL_PSL1GHTvideo.c SDL2-2.0.1-PS3/src/vi
 +    assert(host_addr != NULL);
 +
 +    // Initilise Reality, which sets up the command buffer and shared IO memory
-+    devdata->_CommandBuffer = rsxInit(0x10000, 1024*1024, host_addr);
++    rsxInit(&devdata->_CommandBuffer,0x10000, 1024*1024, host_addr);
 +    assert(devdata->_CommandBuffer != NULL);
 +}
 +

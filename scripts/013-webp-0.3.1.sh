@@ -1,10 +1,10 @@
 #!/bin/sh -e
 # WebP-0.3.1.sh (By Spork Schivago)
 
-WEBP=libwebp-0.3.1
+WEBP=libwebp-1.2.0
 
 ## Download the source code.
-wget --continue https://webp.googlecode.com/files/${WEBP}.tar.gz
+wget --continue https://storage.googleapis.com/downloads.webmproject.org/releases/webp/${WEBP}.tar.gz
 
 ## Unpack the source code.
 rm -Rf ${WEBP} && tar -xvzf ${WEBP}.tar.gz && cd ${WEBP}
