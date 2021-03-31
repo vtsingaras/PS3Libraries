@@ -1,7 +1,7 @@
 #!/bin/sh -e
 # faad2-2.7.sh by dhewg (dhewg@wiibrew.org) (Updated by Spork Schivago)
 
-FAAD2="faad2-2.7"
+FAAD2="faad2-2.8.8"
 
 ## Download the source code.
 wget --continue http://downloads.sourceforge.net/faac/${FAAD2}.tar.gz;

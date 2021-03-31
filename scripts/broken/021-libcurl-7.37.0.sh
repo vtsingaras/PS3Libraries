@@ -16,7 +16,7 @@ rm -Rf ${LIBCURL} && tar -zxvf ${LIBCURL}.tar.gz && cd ${LIBCURL}
 ## Look for our root Certificate Authorities file.
 if [ ! -f ${CA_CERT_PATH}${CA_CERT} ]; then
   echo "We couldn't find a list of root Certificate Authorites, We will try to create one now..."
-  wget --continue -O certdata.txt "http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/certdata.txt?raw=1";
+  wget --continue -O certdata.txt "https://hg.mozilla.org/releases/mozilla-release/raw-file/tip/security/nss/lib/ckfw/builtins/certdata.txt";
   perl ./lib/mk-ca-bundle.pl -n || { echo "$SCRIPT: Failed. Cannot find or create a ca-bundle.crt file";
                                      echo "Perhaps find one and try putting it in /usr/ssl/certs?"; exit 1; }
   CA_CERT="`pwd`/ca-bundle.crt";
