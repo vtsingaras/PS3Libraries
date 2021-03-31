@@ -5,7 +5,6 @@ An updated version of the PS3Libraries with a few additions.
 
 **Included Packages**
 ```
-  cairo-1.12.16  
   faad2-2.7  
   flac-1.3.0  
   freetype-2.5.0.1  
@@ -27,6 +26,7 @@ An updated version of the PS3Libraries with a few additions.
   SDL1 libraries (updated)  
   SDL2-2.0.1  
   SDL2 libraries  
+  RSXGL
   tiff-4.0.3  
   Wargio's NoRSX-0.3.1  
   webp-0.3.1  
