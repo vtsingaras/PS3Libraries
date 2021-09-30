@@ -4,7 +4,7 @@
 FREETYPE="freetype-2.5.0.1"
 
 ## Download the source code.
-wget --continue http://download.savannah.gnu.org/releases/freetype/${FREETYPE}.tar.gz;
+wget --continue http://download.savannah.gnu.org/releases/freetype/freetype-old/${FREETYPE}.tar.gz;
 
 ## Unpack the source code.
 rm -Rf ${FREETYPE} && tar -zxvf ${FREETYPE}.tar.gz && cd ${FREETYPE}
