@@ -22,10 +22,8 @@ An updated version of the PS3Libraries with a few additions.
   SDL1 for psl1ght (Zeldin's)
   SDL1 libraries (updated)  
   SDL2-2.0.1  
-  SDL2 libraries  
-  RSXGL
-  tiff-4.0.3  
-  Wargio's NoRSX-0.3.1  
+  SDL2 libraries
+  tiff-4.0.3
   webp-0.3.1  
   zlib-1.2.8  
 ```
@@ -36,4 +34,5 @@ An updated version of the PS3Libraries with a few additions.
   RSXGL
   libjson
   cairo
+  NoRSX
 ```
