@@ -4,6 +4,7 @@
 # for psl1ght, playstaion 3 open source sdk.
 #
 # Originally Created by Felix Schulze on 08.04.11.
+# Updated by Spork Schivago on 11.12.13.
 # Ported to PS3Libraries to compile with psl1ght.
 # Copyright 2010 Felix Schulze. All rights reserved.
 #
@@ -35,38 +36,34 @@ PLATFORM="PS3"
 wget --continue --no-check-certificate -O polarssl-${VERSION}.gpl.tgz  https://mirrors.spacecruft.org/ARMmbed/mbedtls/archive/polarssl-${VERSION}.tar.gz
 
 ## Unpack the source code.
-rm -Rf polarssl-${VERSION} && tar xfvz polarssl-${VERSION}.gpl.tgz && cd mbedtls/library
+rm -Rf polarssl-${VERSION} && tar -zxvf polarssl-${VERSION}.gpl.tgz && cd mbedtls
 
 ## Patch the source code.
-echo "Patching net.c and timing.c for compatibility..."
-cat ../../../patches/polarssl-1.2.8-net.patch | patch -p1
-cat ../../../patches/polarssl-1.2.8-timing.patch | patch -p1
+if [ -f ../../patches/polarssl-${VERSION}.patch ]; then
+  echo "patching polarssl-${VERSION}...";
+  cat ../../patches/polarssl-${VERSION}.patch | patch -p1;
+fi
 
 echo "Building polarssl for ${PLATFORM} ${SDKVERSION} ${ARCH}"
 
-echo "Patching Makefile..."
-sed -i.bak '4d' ${CURRENTPATH}/mbedtls/library/Makefile
-
 echo "Please stand by..."
 
-export CC=$PS3DEV/ppu/bin/powerpc64-ps3-elf-gcc
-export LD=$PS3DEV/ppu/bin/powerpc64-ps3-elf-ld
-export CPP=$PS3DEV/ppu/bin/powerpc64-ps3-elf-cpp
-export CXX=$PS3DEV/ppu/bin/powerpc64-ps3-elf-g++
-export AR=$PS3DEV/ppu/bin/powerpc64-ps3-elf-ar
-export AS=$PS3DEV/ppu/bin/powerpc64-ps3-elf-as
-export NM=$PS3DEV/ppu/bin/powerpc64-ps3-elf-nm
-export CXXCPP=$PS3DEV/ppu/bin/powerpc64-ps3-elf-cpp
-export RANLIB=$PS3DEV/ppu/bin/powerpc64-ps3-elf-ranlib
-export LDFLAGS="-L$PS3DEV/ppu/powerpc64-ps3-elf/lib -L$PSL1GHT/ppu/lib -L$PS3DEV/portlibs/ppu/lib -lrt -llv2"
-export CFLAGS="-I${CURRENTPATH}/polarssl-${VERSION}/include -I$PS3DEV/ppu/powerpc64-ps3-elf/include -I$PSL1GHT/ppu/include -I$PS3DEV/portlibs/ppu/include -mcpu=cell"
+export CC=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-gcc
+export LD=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ld
+export CPP=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-cpp
+export CXX=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-g++
+export AR=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ar
+export AS=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-as
+export NM=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-nm
+export CXXCPP=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-cpp
+export RANLIB=${PS3DEV}/ppu/bin/powerpc64-ps3-elf-ranlib
+export LDFLAGS=" -L${PSL1GHT}/ppu/lib -L${PS3DEV}/portlibs/ppu/lib -lrt -llv2 -lnet"
+export SYS_LDFLAGS=" -lnet -lsysmodule"
+export CFLAGS=" -I${PSL1GHT}/ppu/include -I${PS3DEV}/portlibs/ppu/include -mcpu=cell"
 
-echo "Build library..."
+
+echo "Building polarssl..."
 ## Compile and install.
-${MAKE:-make}
-
-cp libpolarssl.a $PS3DEV/portlibs/ppu/lib/libpolarssl.a
-cp -R ../include/polarssl $PS3DEV/portlibs/ppu/include/
-cp ../LICENSE $PS3DEV/portlibs/ppu/include/polarssl/LICENSE
+${MAKE:-make} no_test && ${MAKE:-make} install
 
 echo "Building done."
